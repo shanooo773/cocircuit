@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 56" width="260" height="56" role="img" aria-label="CoCircuit Power Consultants logo">
+  <rect x="0" y="4" width="48" height="48" rx="12" fill="#0F172A"/>
+  <path d="M33.19 37.19 A13 13 0 1 1 33.19 18.81" fill="none" stroke="#2563EB" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="33.19" cy="37.19" r="2.8" fill="#10B981"/>
+  <circle cx="33.19" cy="18.81" r="2.8" fill="#10B981"/>
+  <text x="60" y="27" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="800" fill="#0F172A" letter-spacing="0.2">COCIRCUIT</text>
+  <text x="60" y="44" font-family="Inter, Arial, sans-serif" font-size="10.5" font-weight="600" letter-spacing="2" fill="#2563EB">POWER CONSULTANTS</text>
+</svg>

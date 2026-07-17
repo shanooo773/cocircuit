@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Book a Consultation | CoCircuit Power Consultants</title>
+<meta name="description" content="Book a paid engineering consultation with CoCircuit Power Consultants. Complete the form and confirm your slot through secure online payment.">
+<meta name="theme-color" content="#0F172A">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css?v=2">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<svg style="display:none" aria-hidden="true">
+<symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><polyline points="3 7 12 13 21 7"/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h3l1.5 4-2 2a12 12 0 006 6l2-2 4 1.5v3a2 2 0 01-2.2 2A17 17 0 013 5.2 2 2 0 015 3z"/></symbol>
+<symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></symbol>
+</svg>
+
+<header class="navbar">
+  <div class="nav-utility">
+    <div class="container">
+      <nav class="nav-utility-links" aria-label="Utility">
+        <a href="index.html#about">About</a>
+        <a href="team.html">Team</a>
+        <a href="index.html#faq">FAQ</a>
+      </nav>
+    </div>
+  </div>
+  <div class="nav-main">
+    <div class="container">
+      <a href="index.html" class="brand"><img src="assets/cocircuit-rbg.png" alt="CoCircuit Power Consultants" width="74" height="42"></a>
+      <div class="nav-mobile-panel">
+        <nav class="nav-mobile-utility" aria-label="Utility">
+          <a href="index.html#about">About</a>
+          <a href="team.html">Team</a>
+          <a href="index.html#faq">FAQ</a>
+        </nav>
+        <nav class="nav-links" aria-label="Primary">
+          <a href="index.html">Home</a>
+          <a href="services.html">Services</a>
+          <a href="index.html#industries">Industries</a>
+          <a href="index.html#process">Our Process</a>
+          <a href="index.html#contact">Contact</a>
+        </nav>
+        <a href="booking.html" class="btn btn-primary btn-block nav-mobile-cta">Book Consultation</a>
+      </div>
+      <div class="nav-cta">
+        <a href="booking.html" class="btn btn-primary nav-cta-btn">Book Consultation</a>
+        <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="section-dark" style="padding-block: var(--space-8);">
+    <div class="container text-center">
+      <span class="eyebrow">Book a Consultation</span>
+      <h1 style="color:#fff">Schedule time with an engineer</h1>
+      <p style="max-width:600px;margin-inline:auto;">Complete the form below to request your preferred slot. Once validated, you'll be redirected to secure payment to confirm your booking.</p>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="container" style="max-width: 800px;">
+
+      <div class="flow-steps">
+        <div class="flow-step done"><span class="dot"></span>Services</div>
+        <div class="flow-step active"><span class="dot"></span>Consultation Form</div>
+        <div class="flow-step"><span class="dot"></span>Secure Payment</div>
+        <div class="flow-step"><span class="dot"></span>Confirmation</div>
+      </div>
+
+      <form id="booking-form" class="form-card" novalidate>
+        <div class="form-status"></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="b-name">Name <span class="required">*</span></label>
+            <input type="text" id="b-name" name="name" required>
+            <span class="field-error"></span>
+          </div>
+          <div class="form-group">
+            <label for="b-company">Company</label>
+            <input type="text" id="b-company" name="company">
+            <span class="field-error"></span>
+          </div>
+          <div class="form-group">
+            <label for="b-email">Email <span class="required">*</span></label>
+            <input type="email" id="b-email" name="email" required>
+            <span class="field-error"></span>
+          </div>
+          <div class="form-group">
+            <label for="b-phone">Phone <span class="required">*</span></label>
+            <input type="tel" id="b-phone" name="phone" required>
+            <span class="field-error"></span>
+          </div>
+          <div class="form-group full">
+            <label for="b-service">Service Required <span class="required">*</span></label>
+            <select id="b-service" name="service" required>
+              <option value="">Select a service</option>
+              <option>Engineering Design &amp; Analysis</option>
+              <option>Feasibility Studies</option>
+              <option>Compliance &amp; Regulatory Support</option>
+              <option>Project Management Support</option>
+              <option>Technical Due Diligence</option>
+              <option>Site Assessments &amp; Inspections</option>
+              <option>Other</option>
+            </select>
+            <span class="field-error"></span>
+          </div>
+          <div class="form-group full">
+            <label for="b-desc">Project Description <span class="required">*</span></label>
+            <textarea id="b-desc" name="project_description" rows="3" required></textarea>
+            <span class="field-error"></span>
+          </div>
+          <div class="form-group">
+            <label for="b-date">Preferred Meeting Date <span class="required">*</span></label>
+            <input type="date" id="b-date" name="preferred_date" required>
+            <span class="field-error"></span>
+          </div>
+          <div class="form-group">
+            <label for="b-time">Preferred Meeting Time <span class="required">*</span></label>
+            <input type="time" id="b-time" name="preferred_time" required>
+            <span class="field-error"></span>
+          </div>
+          <div class="form-group full">
+            <label for="b-message">Message</label>
+            <textarea id="b-message" name="message" rows="3"></textarea>
+            <span class="field-error"></span>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <p class="form-note placeholder-text" style="margin-top:0;">[Placeholder — state the consultation fee / deposit amount here, e.g. "A £X consultation fee secures your booking and is credited against any resulting project."]</p>
+
+        <button type="submit" class="btn btn-accent btn-block btn-lg">Continue to Secure Payment</button>
+        <p class="form-note">You'll be redirected to Stripe to complete payment. Your details are only used to prepare for your consultation.</p>
+      </form>
+
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand"><img src="assets/logo-white.svg" alt="CoCircuit Power Consultants" width="176" height="38"></div>
+        <p style="font-size:var(--fs-sm); max-width: 320px;">Engineering and technical consulting for commercial, industrial and infrastructure projects.</p>
+        <div class="social-links">
+          <a href="#" aria-label="LinkedIn">in</a>
+          <a href="#" aria-label="X / Twitter">X</a>
+          <a href="#" aria-label="Facebook">f</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="index.html#about">About</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="team.html">Team</a></li>
+          <li><a href="index.html#industries">Industries</a></li>
+          <li><a href="index.html#process">Our Process</a></li>
+          <li><a href="index.html#faq">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <ul>
+          <li><a href="services.html#design-analysis">Engineering Design &amp; Analysis</a></li>
+          <li><a href="services.html#feasibility">Feasibility Studies</a></li>
+          <li><a href="services.html#compliance">Compliance &amp; Regulatory Support</a></li>
+          <li><a href="services.html#project-management">Project Management Support</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul class="footer-contact">
+          <li><svg width="16" height="16"><use href="#i-mail"/></svg> <span class="placeholder-text">info@example.com</span></li>
+          <li><svg width="16" height="16"><use href="#i-phone"/></svg> <span class="placeholder-text">+44 0000 000000</span></li>
+          <li><svg width="16" height="16"><use href="#i-pin"/></svg> <span class="placeholder-text">[Street Address], [City], [Postcode]</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; <span data-year></span> CoCircuit Power Consultants. All rights reserved.</span>
+      <div class="footer-legal">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms &amp; Conditions</a>
+        <a href="refund.html">Refund Policy</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js?v=2"></script>
+</body>
+</html>
