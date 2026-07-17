@@ -1029,7 +1029,7 @@ textarea { resize: vertical; min-height: 120px; }
   .nav-mobile-utility a:hover, .nav-mobile-utility a.active { color: var(--color-secondary); }
   .nav-mobile-cta { display: block; margin-top: var(--space-2); }
   .process-track { grid-template-columns: repeat(2, 1fr); }
-  .grid-4, .grid-3, .grid-2, .mv-grid, .form-grid, .bio-grid { grid-template-columns: 1fr; }
+  .grid-4, .grid-3, .grid-2, .mv-grid, .form-grid, .bio-grid, .cta-split { grid-template-columns: 1fr; }
   .form-group.full { grid-column: auto; }
   .footer-grid { grid-template-columns: 1fr; gap: var(--space-6); }
   .cta-banner { flex-direction: column; align-items: flex-start; text-align: left; }
