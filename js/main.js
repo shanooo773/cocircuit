@@ -138,6 +138,8 @@
         var today = new Date();
         today.setHours(0, 0, 0, 0);
         fieldValid = !isNaN(chosen.getTime()) && chosen >= today;
+      } else if (field.type === 'checkbox') {
+        fieldValid = field.checked;
       }
 
       if (!fieldValid) {
@@ -251,6 +253,92 @@
       setTimeout(function () {
         window.location.href = CONFIG.stripePaymentLink;
       }, 900);
+    });
+  }
+
+  /* -------------------------------------------------------------
+     Job application form (jobs.html) — uploads a CV + details to
+     the PHP backend. No payment involved.
+     ------------------------------------------------------------- */
+  var jobForm = document.getElementById('job-form');
+  if (jobForm) {
+    var jobCvInput = document.getElementById('j-cv');
+    var jobMaxBytes = 5 * 1024 * 1024; // 5MB, keep in sync with api/apply.php
+    var jobAllowedExt = ['pdf', 'doc', 'docx'];
+
+    jobForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var status = jobForm.querySelector('.form-status');
+
+      if (!validateForm(jobForm)) {
+        if (status) {
+          status.textContent = 'Please complete all required fields correctly.';
+          status.className = 'form-status error';
+        }
+        return;
+      }
+
+      // Extra client-side check on the CV file itself (type + size).
+      var cvGroup = jobCvInput.closest('.form-group');
+      var cvError = cvGroup ? cvGroup.querySelector('.field-error') : null;
+      var file = jobCvInput.files && jobCvInput.files[0];
+      var cvValid = true;
+
+      if (file) {
+        var ext = file.name.split('.').pop().toLowerCase();
+        if (jobAllowedExt.indexOf(ext) === -1) {
+          cvValid = false;
+          if (cvError) cvError.textContent = 'Please upload a PDF, DOC or DOCX file.';
+        } else if (file.size > jobMaxBytes) {
+          cvValid = false;
+          if (cvError) cvError.textContent = 'File is too large — please keep it under 5MB.';
+        }
+      }
+
+      if (!cvValid) {
+        if (cvGroup) cvGroup.classList.add('has-error');
+        if (status) {
+          status.textContent = 'Please fix the highlighted field before submitting.';
+          status.className = 'form-status error';
+        }
+        return;
+      }
+
+      var submitBtn = jobForm.querySelector('[type="submit"]');
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting...'; }
+      if (status) { status.className = 'form-status'; status.textContent = ''; }
+
+      var formData = new FormData(jobForm);
+
+      fetch('api/apply.php', { method: 'POST', body: formData })
+        .then(function (res) {
+          return res.json().catch(function () { return {}; }).then(function (data) {
+            return { ok: res.ok, data: data };
+          });
+        })
+        .then(function (result) {
+          if (result.ok && result.data && result.data.success) {
+            jobForm.style.display = 'none';
+            var successPanel = document.getElementById('job-form-success');
+            if (successPanel) {
+              successPanel.style.display = 'block';
+              successPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          } else {
+            if (status) {
+              status.textContent = (result.data && result.data.message) || 'Something went wrong submitting your application. Please try again.';
+              status.className = 'form-status error';
+            }
+            if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Submit Application'; }
+          }
+        })
+        .catch(function () {
+          if (status) {
+            status.textContent = 'Something went wrong submitting your application. Please check your connection and try again.';
+            status.className = 'form-status error';
+          }
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Submit Application'; }
+        });
     });
   }
 }());

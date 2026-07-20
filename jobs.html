@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Book a Consultation | CoCircuit Power Consultants</title>
-<meta name="description" content="Book a paid engineering consultation with CoCircuit Power Consultants. Complete the form and confirm your slot through secure online payment.">
+<title>Find Jobs | CoCircuit Power Consultants</title>
+<meta name="description" content="Submit your CV to CoCircuit Power Consultants. We'll keep your details on file and get in touch when a role matching your profile becomes available.">
 <meta name="theme-color" content="#0F172A">
-<meta name="robots" content="noindex">
+<link rel="canonical" href="https://www.example.com/jobs.html">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,6 +20,7 @@
 <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><polyline points="3 7 12 13 21 7"/></symbol>
 <symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h3l1.5 4-2 2a12 12 0 006 6l2-2 4 1.5v3a2 2 0 01-2.2 2A17 17 0 013 5.2 2 2 0 015 3z"/></symbol>
 <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></symbol>
+<symbol id="i-check-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="8 12.5 11 15.5 16 9"/></symbol>
 </svg>
 
 <header class="navbar">
@@ -65,88 +66,96 @@
 
   <section class="section-dark" style="padding-block: var(--space-8);">
     <div class="container text-center">
-      <span class="eyebrow">Book a Consultation</span>
-      <h1 style="color:#fff">Schedule time with an engineer</h1>
-      <p style="max-width:600px;margin-inline:auto;">Complete the form below to request your preferred slot. Once validated, you'll be redirected to secure payment to confirm your booking.</p>
+      <span class="eyebrow">Find Jobs</span>
+      <h1 style="color:#fff">Submit your CV, we'll do the rest</h1>
+      <p style="max-width:640px;margin-inline:auto;">We don't always have an open role advertised, but we're regularly asked to recommend experienced engineers for client projects. Send us your CV and a few details, and if we find a role that matches your profile, we'll get back to you.</p>
     </div>
   </section>
 
   <section class="reveal">
     <div class="container" style="max-width: 800px;">
 
-      <div class="flow-steps">
-        <div class="flow-step done"><span class="dot"></span>Services</div>
-        <div class="flow-step active"><span class="dot"></span>Consultation Form</div>
-        <div class="flow-step"><span class="dot"></span>Secure Payment</div>
-        <div class="flow-step"><span class="dot"></span>Confirmation</div>
-      </div>
-
-      <form id="booking-form" class="form-card" novalidate>
+      <form id="job-form" class="form-card" novalidate enctype="multipart/form-data">
         <div class="form-status"></div>
+
+        <!-- Honeypot field — hidden from real users, bots tend to fill every field -->
+        <div class="form-group" style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;" aria-hidden="true">
+          <label for="j-website">Website</label>
+          <input type="text" id="j-website" name="website" tabindex="-1" autocomplete="off">
+        </div>
+
         <div class="form-grid">
           <div class="form-group">
-            <label for="b-name">Name <span class="required">*</span></label>
-            <input type="text" id="b-name" name="name" required>
+            <label for="j-name">Full Name <span class="required">*</span></label>
+            <input type="text" id="j-name" name="full_name" required>
             <span class="field-error"></span>
           </div>
           <div class="form-group">
-            <label for="b-company">Company</label>
-            <input type="text" id="b-company" name="company">
+            <label for="j-email">Email <span class="required">*</span></label>
+            <input type="email" id="j-email" name="email" required>
             <span class="field-error"></span>
           </div>
           <div class="form-group">
-            <label for="b-email">Email <span class="required">*</span></label>
-            <input type="email" id="b-email" name="email" required>
+            <label for="j-phone">Phone <span class="required">*</span></label>
+            <input type="tel" id="j-phone" name="phone" required>
             <span class="field-error"></span>
           </div>
           <div class="form-group">
-            <label for="b-phone">Phone <span class="required">*</span></label>
-            <input type="tel" id="b-phone" name="phone" required>
-            <span class="field-error"></span>
-          </div>
-          <div class="form-group full">
-            <label for="b-service">Service Required <span class="required">*</span></label>
-            <select id="b-service" name="service" required>
-              <option value="">Select a service</option>
+            <label for="j-role">Area of Interest <span class="required">*</span></label>
+            <select id="j-role" name="role_interest" required>
+              <option value="">Select an area</option>
               <option>Engineering Design &amp; Analysis</option>
-              <option>Feasibility Studies</option>
-              <option>Compliance &amp; Regulatory Support</option>
-              <option>Project Management Support</option>
-              <option>Technical Due Diligence</option>
+              <option>Power Systems / HV / EHV</option>
+              <option>Compliance &amp; Regulatory</option>
+              <option>Project Management</option>
               <option>Site Assessments &amp; Inspections</option>
               <option>Other</option>
             </select>
             <span class="field-error"></span>
           </div>
-          <div class="form-group full">
-            <label for="b-desc">Project Description <span class="required">*</span></label>
-            <textarea id="b-desc" name="project_description" rows="3" required></textarea>
+          <div class="form-group">
+            <label for="j-experience">Years of Experience</label>
+            <select id="j-experience" name="experience">
+              <option value="">Select a range</option>
+              <option>0–2 years</option>
+              <option>3–5 years</option>
+              <option>6–10 years</option>
+              <option>10+ years</option>
+            </select>
             <span class="field-error"></span>
           </div>
           <div class="form-group">
-            <label for="b-date">Preferred Meeting Date <span class="required">*</span></label>
-            <input type="date" id="b-date" name="preferred_date" required>
-            <span class="field-error"></span>
-          </div>
-          <div class="form-group">
-            <label for="b-time">Preferred Meeting Time <span class="required">*</span></label>
-            <input type="time" id="b-time" name="preferred_time" required>
+            <label for="j-linkedin">LinkedIn / Portfolio URL</label>
+            <input type="url" id="j-linkedin" name="linkedin_url" placeholder="https://">
             <span class="field-error"></span>
           </div>
           <div class="form-group full">
-            <label for="b-message">Message</label>
-            <textarea id="b-message" name="message" rows="3"></textarea>
+            <label for="j-message">Anything else you'd like us to know?</label>
+            <textarea id="j-message" name="message" rows="4"></textarea>
+            <span class="field-error"></span>
+          </div>
+          <div class="form-group full">
+            <label for="j-cv">Upload CV <span class="required">*</span></label>
+            <input type="file" id="j-cv" name="cv" accept=".pdf,.doc,.docx" required>
+            <span class="field-error"></span>
+          </div>
+          <div class="form-group full" style="flex-direction:row; align-items:flex-start; gap: var(--space-3);">
+            <input type="checkbox" id="j-consent" name="consent" required style="width:auto; margin-top:0.2rem;">
+            <label for="j-consent" style="text-transform:none; font-weight:500; letter-spacing:normal;">I agree to my details being stored and processed in line with the <a href="privacy.html">Privacy Policy</a>. <span class="required">*</span></label>
             <span class="field-error"></span>
           </div>
         </div>
 
-        <hr class="divider">
-
-        <p class="form-note placeholder-text" style="margin-top:0;">[Placeholder — state the consultation fee / deposit amount here, e.g. "A £X consultation fee secures your booking and is credited against any resulting project."]</p>
-
-        <button type="submit" class="btn btn-accent btn-block btn-lg">Continue to Secure Payment</button>
-        <p class="form-note">You'll be redirected to Stripe to complete payment. Your details are only used to prepare for your consultation.</p>
+        <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:var(--space-6)">Submit Application</button>
+        <p class="form-note">Accepted formats: PDF, DOC, DOCX (max 5MB). Submitting a CV does not guarantee an interview or offer of work.</p>
       </form>
+
+      <div id="job-form-success" class="form-card" style="display:none; text-align:center;">
+        <span class="card-icon" style="margin-inline:auto;"><svg width="32" height="32"><use href="#i-check-circle"/></svg></span>
+        <h2>Thanks — we've received your CV</h2>
+        <p>If we find a role that matches your profile, we'll be in touch. In the meantime, if you'd like to get ahead of the process, you can book a consultation to help prepare for interview rounds and next steps — right through to a final offer from the hiring company.</p>
+        <a href="booking.html" class="btn btn-primary btn-lg" style="margin-top:var(--space-5)">Book a Consultation</a>
+      </div>
 
     </div>
   </section>

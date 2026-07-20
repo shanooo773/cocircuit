@@ -1042,3 +1042,52 @@ textarea { resize: vertical; min-height: 120px; }
   .process-track { grid-template-columns: 1fr; }
   .container { padding-inline: var(--space-4); }
 }
+
+/* ==========================================================================
+   Admin panel (admin/*.php)
+   ========================================================================== */
+
+.admin-login-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+}
+.admin-login-card { max-width: 400px; width: 100%; }
+
+.admin-wrap { padding-block: var(--space-8); }
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+.admin-header-meta { display: flex; align-items: center; gap: var(--space-4); font-size: var(--fs-sm); color: var(--color-text-muted); }
+
+.admin-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+.admin-table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+.admin-table th, .admin-table td {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+.admin-table tbody tr:last-child td { border-bottom: none; }
+.admin-table thead th {
+  background: var(--color-bg-section);
+  text-transform: uppercase;
+  font-size: var(--fs-xs);
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+.admin-message-cell { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.btn-sm { padding: 0.45rem 1rem; font-size: var(--fs-xs); }

@@ -1,0 +1,13 @@
+# Block all direct access to uploaded CVs — they're only ever served
+# through admin/download.php, which checks the admin session first.
+
+# Apache 2.4+
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+
+# Apache 2.2
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+</IfModule>

@@ -1,1 +1,6 @@
 _reference-old/
+
+# Backend secrets & uploaded CVs — never commit real credentials or applicant files
+config.php
+/uploads/cvs/*
+!/uploads/cvs/.htaccess
