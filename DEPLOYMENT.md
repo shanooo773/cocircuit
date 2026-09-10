@@ -49,6 +49,7 @@ under [`_reference-old/php-backend/`](_reference-old/php-backend/).
 | GET | `/api/admin/applications` | List all job applications as JSON | cookie |
 | GET | `/api/admin/enquiries` | List contact enquiries + quote requests as JSON | cookie |
 | GET | `/api/admin/download?id=N` | Stream one CV as an attachment | cookie |
+| POST | `/api/admin/delete` | `{type,ids[]}` → delete selected rows (+ CV blobs) | cookie |
 | POST | `/api/admin/create` | One-time: create the first admin | `X-Setup-Token` header |
 
 ---

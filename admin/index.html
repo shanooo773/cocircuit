@@ -16,6 +16,8 @@
     border-color:var(--color-primary,#0F172A); }
   .admin-panel { margin-top:var(--space-5); }
   .admin-panel[hidden] { display:none; }
+  .admin-toolbar { display:flex; align-items:center; gap:var(--space-3); margin-bottom:var(--space-3); }
+  .admin-table td.sel, .admin-table th.sel { width:36px; text-align:center; }
 </style>
 </head>
 <body>
@@ -36,8 +38,13 @@
     <p id="state" style="margin-top:var(--space-5);">Loading&hellip;</p>
 
     <div class="admin-panel" id="panel-apps" hidden>
+      <div class="admin-toolbar">
+        <button class="btn btn-outline btn-sm" data-delete="application" disabled>Delete selected</button>
+        <span class="form-note" data-selinfo="apps"></span>
+      </div>
       <div class="admin-table-wrap"><table class="admin-table">
         <thead><tr>
+          <th class="sel"><input type="checkbox" data-selectall="apps" aria-label="Select all"></th>
           <th>Submitted</th><th>Name</th><th>Email</th><th>Phone</th><th>Area of Interest</th>
           <th>Experience</th><th>LinkedIn</th><th>Message</th><th>CV</th>
         </tr></thead>
@@ -46,8 +53,13 @@
     </div>
 
     <div class="admin-panel" id="panel-contact" hidden>
+      <div class="admin-toolbar">
+        <button class="btn btn-outline btn-sm" data-delete="contact" disabled>Delete selected</button>
+        <span class="form-note" data-selinfo="contact"></span>
+      </div>
       <div class="admin-table-wrap"><table class="admin-table">
         <thead><tr>
+          <th class="sel"><input type="checkbox" data-selectall="contact" aria-label="Select all"></th>
           <th>Submitted</th><th>Name</th><th>Company</th><th>Email</th><th>Phone</th>
           <th>Service</th><th>Preferred</th><th>Project Description</th><th>Message</th>
         </tr></thead>
@@ -56,8 +68,13 @@
     </div>
 
     <div class="admin-panel" id="panel-quotes" hidden>
+      <div class="admin-toolbar">
+        <button class="btn btn-outline btn-sm" data-delete="quote" disabled>Delete selected</button>
+        <span class="form-note" data-selinfo="quotes"></span>
+      </div>
       <div class="admin-table-wrap"><table class="admin-table">
         <thead><tr>
+          <th class="sel"><input type="checkbox" data-selectall="quotes" aria-label="Select all"></th>
           <th>Submitted</th><th>Name</th><th>Company</th><th>Email</th><th>Phone</th>
           <th>Service</th><th>Project Description</th><th>Message</th>
         </tr></thead>
@@ -69,6 +86,7 @@
   <script>
     (function () {
       var state = document.getElementById('state');
+      var PANELS = { apps: 'application', contact: 'contact', quotes: 'quote' };
 
       function esc(v) {
         return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) {
@@ -86,6 +104,7 @@
         var d = new Date(s);
         return isNaN(d) ? esc(s) : d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
       }
+      function cbTd(id) { return '<td class="sel"><input type="checkbox" class="row-cb" value="' + esc(id) + '"></td>'; }
       function td(v) { return '<td>' + esc(v == null || v === '' ? '—' : v) + '</td>'; }
       function mailTd(v) { return '<td><a href="mailto:' + esc(v) + '">' + esc(v) + '</a></td>'; }
       function msgTd(v) { return '<td class="admin-message-cell" title="' + esc(v || '') + '">' + esc(v || '—') + '</td>'; }
@@ -94,7 +113,7 @@
         document.getElementById('rows-apps').innerHTML = list.map(function (a) {
           var linkedin = a.linkedin_url
             ? '<a href="' + esc(a.linkedin_url) + '" target="_blank" rel="noopener noreferrer">View</a>' : '—';
-          return '<tr>' + td(fmtDate(a.created_at)) + td(a.full_name) + mailTd(a.email) + td(a.phone) +
+          return '<tr>' + cbTd(a.id) + td(fmtDate(a.created_at)) + td(a.full_name) + mailTd(a.email) + td(a.phone) +
             td(a.role_interest) + td(a.experience) + '<td>' + linkedin + '</td>' + msgTd(a.message) +
             '<td><a href="/api/admin/download?id=' + encodeURIComponent(a.id) + '" class="btn btn-primary btn-sm">' +
             'Download <span style="opacity:0.75;">(' + fmtBytes(a.cv_size) + ')</span></a></td></tr>';
@@ -103,25 +122,69 @@
       function renderContact(list) {
         document.getElementById('rows-contact').innerHTML = list.map(function (c) {
           var pref = [fmtDay(c.preferred_date), c.preferred_time].filter(Boolean).join(' ');
-          return '<tr>' + td(fmtDate(c.created_at)) + td(c.name) + td(c.company) + mailTd(c.email) +
+          return '<tr>' + cbTd(c.id) + td(fmtDate(c.created_at)) + td(c.name) + td(c.company) + mailTd(c.email) +
             td(c.phone) + td(c.service) + td(pref) + msgTd(c.project_description) + msgTd(c.message) + '</tr>';
         }).join('');
       }
       function renderQuotes(list) {
         document.getElementById('rows-quotes').innerHTML = list.map(function (q) {
-          return '<tr>' + td(fmtDate(q.created_at)) + td(q.name) + td(q.company) + mailTd(q.email) +
+          return '<tr>' + cbTd(q.id) + td(fmtDate(q.created_at)) + td(q.name) + td(q.company) + mailTd(q.email) +
             td(q.phone) + td(q.service) + msgTd(q.project_description) + msgTd(q.message) + '</tr>';
         }).join('');
       }
+
+      function panelEl(key) { return document.getElementById('panel-' + key); }
+      function selectedIds(key) {
+        return Array.prototype.slice.call(panelEl(key).querySelectorAll('.row-cb:checked'))
+          .map(function (cb) { return cb.value; });
+      }
+      function refreshToolbar(key) {
+        var n = selectedIds(key).length;
+        var btn = panelEl(key).querySelector('[data-delete]');
+        var info = panelEl(key).querySelector('[data-selinfo]');
+        btn.disabled = n === 0;
+        btn.textContent = n ? 'Delete selected (' + n + ')' : 'Delete selected';
+        if (info) info.textContent = n ? n + ' selected' : '';
+      }
+
+      ['apps', 'contact', 'quotes'].forEach(function (key) {
+        var panel = panelEl(key);
+        panel.addEventListener('change', function (e) {
+          if (e.target.classList.contains('row-cb')) refreshToolbar(key);
+          if (e.target.dataset.selectall != null) {
+            panel.querySelectorAll('.row-cb').forEach(function (cb) { cb.checked = e.target.checked; });
+            refreshToolbar(key);
+          }
+        });
+        panel.querySelector('[data-delete]').addEventListener('click', function () {
+          var ids = selectedIds(key);
+          if (!ids.length) return;
+          var noun = key === 'apps' ? 'application(s)' : (key === 'contact' ? 'enquiry/enquiries' : 'quote request(s)');
+          if (!window.confirm('Permanently delete ' + ids.length + ' ' + noun + '? This cannot be undone.')) return;
+
+          var btn = this;
+          btn.disabled = true;
+          btn.textContent = 'Deleting...';
+          fetch('/api/admin/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type: PANELS[key], ids: ids })
+          })
+            .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, d: d }; }); })
+            .then(function (res) {
+              if (res.ok && res.d.ok) { load(key); }
+              else { window.alert(res.d.error || 'Delete failed.'); btn.disabled = false; refreshToolbar(key); }
+            })
+            .catch(function () { window.alert('Delete failed. Check your connection.'); btn.disabled = false; refreshToolbar(key); });
+        });
+      });
 
       function setCount(key, list) {
         var el = document.querySelector('[data-count="' + key + '"]');
         if (el) el.textContent = '(' + list.length + ')';
       }
       function showPanel(key) {
-        ['apps', 'contact', 'quotes'].forEach(function (k) {
-          document.getElementById('panel-' + k).hidden = (k !== key);
-        });
+        ['apps', 'contact', 'quotes'].forEach(function (k) { panelEl(k).hidden = (k !== key); });
         document.querySelectorAll('.admin-tab').forEach(function (t) {
           t.setAttribute('aria-selected', t.dataset.panel === key ? 'true' : 'false');
         });
@@ -130,30 +193,40 @@
         t.addEventListener('click', function () { showPanel(t.dataset.panel); });
       });
 
-      Promise.all([
-        fetch('/api/admin/applications', { headers: { Accept: 'application/json' } }),
-        fetch('/api/admin/enquiries', { headers: { Accept: 'application/json' } })
-      ]).then(function (resps) {
-        if (resps.some(function (r) { return r.status === 401; })) {
-          window.location.href = '/admin/login';
-          throw new Error('unauth');
-        }
-        if (resps.some(function (r) { return !r.ok; })) throw new Error('load failed');
-        return Promise.all(resps.map(function (r) { return r.json(); }));
-      }).then(function (data) {
-        var apps = data[0].applications || [];
-        var contact = data[1].contact || [];
-        var quotes = data[1].quotes || [];
+      function load(focusKey) {
+        return Promise.all([
+          fetch('/api/admin/applications', { headers: { Accept: 'application/json' } }),
+          fetch('/api/admin/enquiries', { headers: { Accept: 'application/json' } })
+        ]).then(function (resps) {
+          if (resps.some(function (r) { return r.status === 401; })) {
+            window.location.href = '/admin/login';
+            throw new Error('unauth');
+          }
+          if (resps.some(function (r) { return !r.ok; })) throw new Error('load failed');
+          return Promise.all(resps.map(function (r) { return r.json(); }));
+        }).then(function (data) {
+          var apps = data[0].applications || [];
+          var contact = data[1].contact || [];
+          var quotes = data[1].quotes || [];
 
-        renderApps(apps); renderContact(contact); renderQuotes(quotes);
-        setCount('apps', apps); setCount('contact', contact); setCount('quotes', quotes);
+          renderApps(apps); renderContact(contact); renderQuotes(quotes);
+          setCount('apps', apps); setCount('contact', contact); setCount('quotes', quotes);
+          ['apps', 'contact', 'quotes'].forEach(function (k) {
+            var sa = document.querySelector('[data-selectall="' + k + '"]');
+            if (sa) sa.checked = false;
+            refreshToolbar(k);
+          });
 
-        state.style.display = 'none';
-        showPanel('apps');
-      }).catch(function (err) {
-        if (err && err.message === 'unauth') return;
-        state.textContent = 'Could not load submissions. Please refresh.';
-      });
+          state.style.display = 'none';
+          showPanel(focusKey || 'apps');
+        }).catch(function (err) {
+          if (err && err.message === 'unauth') return;
+          state.textContent = 'Could not load submissions. Please refresh.';
+          state.style.display = 'block';
+        });
+      }
+
+      load();
     }());
   </script>
 </body>
