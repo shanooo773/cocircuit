@@ -263,7 +263,7 @@
   var jobForm = document.getElementById('job-form');
   if (jobForm) {
     var jobCvInput = document.getElementById('j-cv');
-    var jobMaxBytes = 5 * 1024 * 1024; // 5MB, keep in sync with api/apply.php
+    var jobMaxBytes = 5 * 1024 * 1024; // 5MB, keep in sync with api/apply.js
     var jobAllowedExt = ['pdf', 'doc', 'docx'];
 
     jobForm.addEventListener('submit', function (e) {
@@ -310,7 +310,7 @@
 
       var formData = new FormData(jobForm);
 
-      fetch('api/apply.php', { method: 'POST', body: formData })
+      fetch('/api/apply', { method: 'POST', body: formData })
         .then(function (res) {
           return res.json().catch(function () { return {}; }).then(function (data) {
             return { ok: res.ok, data: data };

@@ -1,0 +1,8 @@
+_reference-old/
+uploads/
+DEPLOYMENT.md
+schema.sql
+schema.postgres.sql
+config.sample.php
+.env
+.env.*

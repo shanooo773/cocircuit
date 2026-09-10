@@ -1,6 +1,15 @@
 _reference-old/
 
-# Backend secrets & uploaded CVs — never commit real credentials or applicant files
+# Node / Vercel
+node_modules/
+.vercel/
+
+# Local env — never commit secrets
+.env
+.env.local
+.env.*.local
+
+# Legacy PHP backend secrets & uploaded CVs (kept only under _reference-old)
 config.php
 /uploads/cvs/*
 !/uploads/cvs/.htaccess

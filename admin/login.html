@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Login | CoCircuit Power Consultants</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css?v=2">
+</head>
+<body style="background:var(--color-bg-section);">
+  <div class="admin-login-wrap">
+    <form id="login-form" class="form-card admin-login-card" novalidate>
+      <div class="text-center" style="margin-bottom:var(--space-6);">
+        <img src="../assets/cocircuit-rbg.png" alt="CoCircuit Power Consultants" width="74" height="42" style="margin-inline:auto;">
+        <h1 style="font-size:var(--fs-xl); margin-top:var(--space-4); margin-bottom:0;">Admin Login</h1>
+      </div>
+
+      <div class="form-status error" id="login-error" style="display:none;"></div>
+
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required autofocus autocomplete="username">
+      </div>
+      <div class="form-group" style="margin-top:var(--space-4);">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required autocomplete="current-password">
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:var(--space-6);">Log In</button>
+    </form>
+  </div>
+
+  <script>
+    (function () {
+      var form = document.getElementById('login-form');
+      var errorBox = document.getElementById('login-error');
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        errorBox.style.display = 'none';
+        var btn = form.querySelector('[type="submit"]');
+        btn.disabled = true;
+        btn.textContent = 'Logging in...';
+
+        fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value
+          })
+        })
+          .then(function (res) {
+            return res.json().catch(function () { return {}; }).then(function (data) {
+              return { ok: res.ok, data: data };
+            });
+          })
+          .then(function (result) {
+            if (result.ok && result.data.ok) {
+              window.location.href = '/admin';
+              return;
+            }
+            errorBox.textContent = result.data.error || 'Invalid username or password.';
+            errorBox.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = 'Log In';
+          })
+          .catch(function () {
+            errorBox.textContent = 'Something went wrong. Please try again.';
+            errorBox.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = 'Log In';
+          });
+      });
+    }());
+  </script>
+</body>
+</html>

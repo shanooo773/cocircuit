@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Job Applications | Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css?v=2">
+</head>
+<body>
+  <div class="container admin-wrap">
+    <div class="admin-header">
+      <h1 style="margin-bottom:0;">Job Applications</h1>
+      <div class="admin-header-meta">
+        <span id="who"></span>
+        <a href="/api/admin/logout" class="btn btn-outline">Log Out</a>
+      </div>
+    </div>
+
+    <p id="state" style="margin-top:var(--space-6);">Loading&hellip;</p>
+
+    <div class="admin-table-wrap" id="table-wrap" style="display:none;">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Submitted</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Area of Interest</th>
+            <th>Experience</th>
+            <th>LinkedIn</th>
+            <th>Message</th>
+            <th>CV</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var state = document.getElementById('state');
+
+      function esc(v) {
+        return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+      }
+      function fmtBytes(b) { return (Math.round((b / 1024) * 10) / 10) + ' KB'; }
+      function fmtDate(s) {
+        var d = new Date(s);
+        if (isNaN(d)) return esc(s);
+        return d.toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+      }
+
+      fetch('/api/admin/applications', { headers: { 'Accept': 'application/json' } })
+        .then(function (res) {
+          if (res.status === 401) { window.location.href = '/admin/login'; throw new Error('unauth'); }
+          if (!res.ok) throw new Error('load failed');
+          return res.json();
+        })
+        .then(function (data) {
+          var apps = data.applications || [];
+          if (!apps.length) { state.textContent = 'No applications yet.'; return; }
+
+          var rows = apps.map(function (a) {
+            var linkedin = a.linkedin_url
+              ? '<a href="' + esc(a.linkedin_url) + '" target="_blank" rel="noopener noreferrer">View</a>'
+              : '&mdash;';
+            return '<tr>' +
+              '<td>' + fmtDate(a.created_at) + '</td>' +
+              '<td>' + esc(a.full_name) + '</td>' +
+              '<td><a href="mailto:' + esc(a.email) + '">' + esc(a.email) + '</a></td>' +
+              '<td>' + esc(a.phone) + '</td>' +
+              '<td>' + esc(a.role_interest) + '</td>' +
+              '<td>' + esc(a.experience || '—') + '</td>' +
+              '<td>' + linkedin + '</td>' +
+              '<td class="admin-message-cell" title="' + esc(a.message || '') + '">' + esc(a.message || '—') + '</td>' +
+              '<td><a href="/api/admin/download?id=' + encodeURIComponent(a.id) + '" class="btn btn-primary btn-sm">' +
+                'Download <span style="opacity:0.75;">(' + fmtBytes(a.cv_size) + ')</span></a></td>' +
+              '</tr>';
+          }).join('');
+
+          document.getElementById('rows').innerHTML = rows;
+          state.style.display = 'none';
+          document.getElementById('table-wrap').style.display = 'block';
+        })
+        .catch(function (err) {
+          if (err && err.message === 'unauth') return;
+          state.textContent = 'Could not load applications. Please refresh.';
+        });
+    }());
+  </script>
+</body>
+</html>
