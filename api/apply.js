@@ -129,7 +129,8 @@ export default async function handler(req, res) {
       addRandomSuffix: true,
       contentType: file.mimeType,
     });
-  } catch {
+  } catch (err) {
+    console.error('CV blob upload failed:', err);
     return respond(res, 500, false, 'We could not save your CV. Please try again.');
   }
 
@@ -148,7 +149,8 @@ export default async function handler(req, res) {
          ${linkedinUrl ? linkedinUrl.slice(0, 255) : null}, ${message || null},
          ${blob.url}, ${origName}, ${file.buffer.length}, ${ip})
     `;
-  } catch {
+  } catch (err) {
+    console.error('DB insert failed:', err);
     // Roll back the file we already saved so we don't leak orphaned uploads.
     try { await del(blob.url); } catch { /* ignore */ }
     return respond(res, 500, false, 'We could not save your application. Please try again shortly.');
