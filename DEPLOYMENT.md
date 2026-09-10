@@ -21,7 +21,7 @@ under [`_reference-old/php-backend/`](_reference-old/php-backend/).
 | Admin panel | Static pages + JSON APIs, JWT cookie auth | `admin/login.html`, `admin/index.html`, `api/admin/*.js` |
 | Shared code | DB client, auth helpers | `lib/db.js`, `lib/auth.js` |
 | Database schema | Postgres | `schema.postgres.sql` (tables: `job_applications`, `admins`) |
-| Stored CVs | Vercel Blob objects | referenced by `cv_url` in `job_applications`; downloaded only via `api/admin/download.js` after login |
+| Stored CVs | Vercel Blob objects (private store) | referenced by `cv_url` in `job_applications`; downloaded only via `api/admin/download.js` after login |
 
 ### How the job flow works
 
@@ -150,11 +150,10 @@ free tier and branching), or create a separate Neon branch for local work.
 
 ## 6. Notes & trade-offs
 
-- **Blob URLs are public but unguessable.** Vercel Blob currently only
-  offers public access; the URL contains a random suffix and is never sent
-  to the browser (downloads are proxied through the authed endpoint). If
-  you need hard private storage, switch `api/apply.js` / `download.js` to
-  S3 with signed URLs.
+- **CVs are in a private Blob store.** `api/apply.js` uploads with
+  `access: 'private'`; `api/admin/download.js` pulls the bytes back with the
+  store token and streams them only after the admin session check. The blob
+  URLs are never exposed to the browser and are not publicly fetchable.
 - **Sessions are stateless JWTs** in an `httpOnly; Secure; SameSite=Lax`
   cookie named `cocircuit_admin`, valid 8 hours. Rotating `AUTH_SECRET`
   logs everyone out.

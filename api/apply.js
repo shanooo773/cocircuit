@@ -125,7 +125,7 @@ export default async function handler(req, res) {
   let blob;
   try {
     blob = await put(`cvs/${randomUUID()}.${ext}`, file.buffer, {
-      access: 'public',
+      access: 'private',
       addRandomSuffix: true,
       contentType: file.mimeType,
     });

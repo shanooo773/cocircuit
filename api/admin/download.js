@@ -1,8 +1,9 @@
 /**
  * Streams a stored CV as an attachment. Admin session required.
- * The Blob URL is never exposed to the browser — it is proxied here so the
- * download stays behind the admin login.
+ * CVs live in a PRIVATE Vercel Blob store — the bytes are pulled here with
+ * the store's read-write token, so nothing is ever publicly reachable.
  */
+import { get } from '@vercel/blob';
 import { getDb } from '../../lib/db.js';
 import { getAdmin } from '../../lib/auth.js';
 
@@ -17,10 +18,18 @@ export default async function handler(req, res) {
   const app = rows[0];
   if (!app) return res.status(404).send('Not found.');
 
-  const upstream = await fetch(app.cv_url);
-  if (!upstream.ok) return res.status(404).send('File no longer available.');
-  const buf = Buffer.from(await upstream.arrayBuffer());
+  let result;
+  try {
+    result = await get(app.cv_url, { access: 'private' });
+  } catch (err) {
+    console.error('Blob get failed:', err);
+    return res.status(502).send('Could not retrieve the file.');
+  }
+  if (!result || result.statusCode !== 200) {
+    return res.status(404).send('File no longer available.');
+  }
 
+  const buf = Buffer.from(await new Response(result.stream).arrayBuffer());
   const downloadName = String(app.cv_original_name).replace(/[^A-Za-z0-9._-]/g, '_');
 
   res.setHeader('Content-Type', 'application/octet-stream');
