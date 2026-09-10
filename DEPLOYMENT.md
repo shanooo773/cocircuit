@@ -20,7 +20,8 @@ under [`_reference-old/php-backend/`](_reference-old/php-backend/).
 | Application API | Node serverless function | `api/apply.js` |
 | Admin panel | Static pages + JSON APIs, JWT cookie auth | `admin/login.html`, `admin/index.html`, `api/admin/*.js` |
 | Shared code | DB client, auth helpers | `lib/db.js`, `lib/auth.js` |
-| Database schema | Postgres | `schema.postgres.sql` (tables: `job_applications`, `admins`) |
+| Contact / quote forms | Static pages; JS posts JSON | `index.html` (#contact), `quote.html` + `js/main.js` |
+| Database schema | Postgres | `schema.postgres.sql` (tables: `job_applications`, `contact_enquiries`, `quote_requests`, `admins`) |
 | Stored CVs | Vercel Blob objects (private store) | referenced by `cv_url` in `job_applications`; downloaded only via `api/admin/download.js` after login |
 
 ### How the job flow works
@@ -40,10 +41,13 @@ under [`_reference-old/php-backend/`](_reference-old/php-backend/).
 
 | Method | Path | Purpose | Auth |
 |---|---|---|---|
-| POST | `/api/apply` | Submit an application (multipart form) | none |
+| POST | `/api/apply` | Submit a job application (multipart form) | none |
+| POST | `/api/contact` | Submit a contact enquiry (JSON) | none |
+| POST | `/api/quote` | Submit a quote request (JSON) | none |
 | POST | `/api/admin/login` | `{username,password}` → sets session cookie | none |
 | GET | `/api/admin/logout` | Clears cookie, redirects to `/admin/login` | cookie |
-| GET | `/api/admin/applications` | List all applications as JSON | cookie |
+| GET | `/api/admin/applications` | List all job applications as JSON | cookie |
+| GET | `/api/admin/enquiries` | List contact enquiries + quote requests as JSON | cookie |
 | GET | `/api/admin/download?id=N` | Stream one CV as an attachment | cookie |
 | POST | `/api/admin/create` | One-time: create the first admin | `X-Setup-Token` header |
 

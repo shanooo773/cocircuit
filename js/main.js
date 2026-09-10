@@ -166,53 +166,74 @@
   });
 
   /* -------------------------------------------------------------
-     Contact form (index.html) — placeholder submit handler
+     Generic JSON form submit → serverless endpoint.
      ------------------------------------------------------------- */
-  var contactForm = document.getElementById('contact-form');
-  if (contactForm) {
-    contactForm.addEventListener('submit', function (e) {
+  function wireJsonForm(formId, endpoint, opts) {
+    var form = document.getElementById(formId);
+    if (!form) return;
+    opts = opts || {};
+
+    form.addEventListener('submit', function (e) {
       e.preventDefault();
-      var status = contactForm.querySelector('.form-status');
-      if (!validateForm(contactForm)) {
+      var status = form.querySelector('.form-status');
+
+      if (!validateForm(form)) {
         if (status) {
           status.textContent = 'Please complete all required fields correctly.';
           status.className = 'form-status error';
         }
         return;
       }
-      // TODO: connect to a backend / email service (e.g. Formspree, a serverless
-      // function, or the client's CRM) to actually deliver this submission.
-      if (status) {
-        status.textContent = 'Thank you — your message has been received. We will be in touch within one business day.';
-        status.className = 'form-status success';
-      }
-      contactForm.reset();
+
+      var payload = {};
+      new FormData(form).forEach(function (value, key) { payload[key] = value; });
+
+      var submitBtn = form.querySelector('[type="submit"]');
+      var originalLabel = submitBtn ? submitBtn.textContent : '';
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Sending...'; }
+      if (status) { status.className = 'form-status'; status.textContent = ''; }
+
+      fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+        .then(function (res) {
+          return res.json().catch(function () { return {}; }).then(function (data) {
+            return { ok: res.ok, data: data };
+          });
+        })
+        .then(function (result) {
+          if (result.ok && result.data && result.data.success) {
+            form.reset();
+            if (status) {
+              status.textContent = opts.successMessage ||
+                'Thank you — your submission has been received. We will be in touch within one business day.';
+              status.className = 'form-status success';
+            }
+          } else if (status) {
+            status.textContent = (result.data && result.data.message) ||
+              'Something went wrong. Please try again.';
+            status.className = 'form-status error';
+          }
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalLabel; }
+        })
+        .catch(function () {
+          if (status) {
+            status.textContent = 'Something went wrong. Please check your connection and try again.';
+            status.className = 'form-status error';
+          }
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalLabel; }
+        });
     });
   }
 
-  /* -------------------------------------------------------------
-     Request a Quote form (quote.html) — placeholder submit handler
-     ------------------------------------------------------------- */
-  var quoteForm = document.getElementById('quote-form');
-  if (quoteForm) {
-    quoteForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var status = quoteForm.querySelector('.form-status');
-      if (!validateForm(quoteForm)) {
-        if (status) {
-          status.textContent = 'Please complete all required fields correctly.';
-          status.className = 'form-status error';
-        }
-        return;
-      }
-      // TODO: connect to a backend / email service to deliver quote requests.
-      if (status) {
-        status.textContent = 'Thank you — your quote request has been received. Our team will respond within one business day.';
-        status.className = 'form-status success';
-      }
-      quoteForm.reset();
-    });
-  }
+  wireJsonForm('contact-form', '/api/contact', {
+    successMessage: 'Thank you — your message has been received. We will be in touch within one business day.'
+  });
+  wireJsonForm('quote-form', '/api/quote', {
+    successMessage: 'Thank you — your quote request has been received. Our team will respond within one business day.'
+  });
 
   /* -------------------------------------------------------------
      Book a Consultation form (booking.html) — validate, then hand
@@ -258,7 +279,7 @@
 
   /* -------------------------------------------------------------
      Job application form (jobs.html) — uploads a CV + details to
-     the PHP backend. No payment involved.
+     /api/apply. No payment involved.
      ------------------------------------------------------------- */
   var jobForm = document.getElementById('job-form');
   if (jobForm) {

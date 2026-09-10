@@ -27,3 +27,37 @@ CREATE TABLE IF NOT EXISTS job_applications (
 
 CREATE INDEX IF NOT EXISTS idx_job_applications_created_at
     ON job_applications (created_at DESC);
+
+CREATE TABLE IF NOT EXISTS contact_enquiries (
+    id                  SERIAL PRIMARY KEY,
+    name                VARCHAR(150) NOT NULL,
+    company             VARCHAR(150),
+    email               VARCHAR(190) NOT NULL,
+    phone               VARCHAR(40)  NOT NULL,
+    service             VARCHAR(120) NOT NULL,
+    preferred_date      DATE,
+    preferred_time      VARCHAR(10),
+    project_description TEXT,
+    message             TEXT         NOT NULL,
+    ip_address          VARCHAR(45),
+    created_at          TIMESTAMPTZ  NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_contact_enquiries_created_at
+    ON contact_enquiries (created_at DESC);
+
+CREATE TABLE IF NOT EXISTS quote_requests (
+    id                  SERIAL PRIMARY KEY,
+    name                VARCHAR(150) NOT NULL,
+    company             VARCHAR(150),
+    email               VARCHAR(190) NOT NULL,
+    phone               VARCHAR(40)  NOT NULL,
+    service             VARCHAR(120) NOT NULL,
+    project_description TEXT         NOT NULL,
+    message             TEXT,
+    ip_address          VARCHAR(45),
+    created_at          TIMESTAMPTZ  NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_quote_requests_created_at
+    ON quote_requests (created_at DESC);

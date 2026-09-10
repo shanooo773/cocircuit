@@ -3,41 +3,66 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Job Applications | Admin</title>
+<title>Submissions | Admin</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/styles.css?v=2">
+<style>
+  .admin-tabs { display:flex; gap:var(--space-2); margin-top:var(--space-6); flex-wrap:wrap; }
+  .admin-tab { padding:var(--space-2) var(--space-4); border:1px solid var(--color-border,#d0d5dd);
+    border-radius:8px; background:transparent; cursor:pointer; font:inherit; font-weight:600; }
+  .admin-tab[aria-selected="true"] { background:var(--color-primary,#0F172A); color:#fff;
+    border-color:var(--color-primary,#0F172A); }
+  .admin-panel { margin-top:var(--space-5); }
+  .admin-panel[hidden] { display:none; }
+</style>
 </head>
 <body>
   <div class="container admin-wrap">
     <div class="admin-header">
-      <h1 style="margin-bottom:0;">Job Applications</h1>
+      <h1 style="margin-bottom:0;">Submissions</h1>
       <div class="admin-header-meta">
-        <span id="who"></span>
         <a href="/api/admin/logout" class="btn btn-outline">Log Out</a>
       </div>
     </div>
 
-    <p id="state" style="margin-top:var(--space-6);">Loading&hellip;</p>
+    <div class="admin-tabs" role="tablist">
+      <button class="admin-tab" role="tab" data-panel="apps" aria-selected="true">Job Applications <span data-count="apps"></span></button>
+      <button class="admin-tab" role="tab" data-panel="contact" aria-selected="false">Contact Enquiries <span data-count="contact"></span></button>
+      <button class="admin-tab" role="tab" data-panel="quotes" aria-selected="false">Quote Requests <span data-count="quotes"></span></button>
+    </div>
 
-    <div class="admin-table-wrap" id="table-wrap" style="display:none;">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>Submitted</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Area of Interest</th>
-            <th>Experience</th>
-            <th>LinkedIn</th>
-            <th>Message</th>
-            <th>CV</th>
-          </tr>
-        </thead>
-        <tbody id="rows"></tbody>
-      </table>
+    <p id="state" style="margin-top:var(--space-5);">Loading&hellip;</p>
+
+    <div class="admin-panel" id="panel-apps" hidden>
+      <div class="admin-table-wrap"><table class="admin-table">
+        <thead><tr>
+          <th>Submitted</th><th>Name</th><th>Email</th><th>Phone</th><th>Area of Interest</th>
+          <th>Experience</th><th>LinkedIn</th><th>Message</th><th>CV</th>
+        </tr></thead>
+        <tbody id="rows-apps"></tbody>
+      </table></div>
+    </div>
+
+    <div class="admin-panel" id="panel-contact" hidden>
+      <div class="admin-table-wrap"><table class="admin-table">
+        <thead><tr>
+          <th>Submitted</th><th>Name</th><th>Company</th><th>Email</th><th>Phone</th>
+          <th>Service</th><th>Preferred</th><th>Project Description</th><th>Message</th>
+        </tr></thead>
+        <tbody id="rows-contact"></tbody>
+      </table></div>
+    </div>
+
+    <div class="admin-panel" id="panel-quotes" hidden>
+      <div class="admin-table-wrap"><table class="admin-table">
+        <thead><tr>
+          <th>Submitted</th><th>Name</th><th>Company</th><th>Email</th><th>Phone</th>
+          <th>Service</th><th>Project Description</th><th>Message</th>
+        </tr></thead>
+        <tbody id="rows-quotes"></tbody>
+      </table></div>
     </div>
   </div>
 
@@ -56,43 +81,79 @@
         if (isNaN(d)) return esc(s);
         return d.toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
       }
+      function fmtDay(s) {
+        if (!s) return '';
+        var d = new Date(s);
+        return isNaN(d) ? esc(s) : d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+      }
+      function td(v) { return '<td>' + esc(v == null || v === '' ? '—' : v) + '</td>'; }
+      function mailTd(v) { return '<td><a href="mailto:' + esc(v) + '">' + esc(v) + '</a></td>'; }
+      function msgTd(v) { return '<td class="admin-message-cell" title="' + esc(v || '') + '">' + esc(v || '—') + '</td>'; }
 
-      fetch('/api/admin/applications', { headers: { 'Accept': 'application/json' } })
-        .then(function (res) {
-          if (res.status === 401) { window.location.href = '/admin/login'; throw new Error('unauth'); }
-          if (!res.ok) throw new Error('load failed');
-          return res.json();
-        })
-        .then(function (data) {
-          var apps = data.applications || [];
-          if (!apps.length) { state.textContent = 'No applications yet.'; return; }
+      function renderApps(list) {
+        document.getElementById('rows-apps').innerHTML = list.map(function (a) {
+          var linkedin = a.linkedin_url
+            ? '<a href="' + esc(a.linkedin_url) + '" target="_blank" rel="noopener noreferrer">View</a>' : '—';
+          return '<tr>' + td(fmtDate(a.created_at)) + td(a.full_name) + mailTd(a.email) + td(a.phone) +
+            td(a.role_interest) + td(a.experience) + '<td>' + linkedin + '</td>' + msgTd(a.message) +
+            '<td><a href="/api/admin/download?id=' + encodeURIComponent(a.id) + '" class="btn btn-primary btn-sm">' +
+            'Download <span style="opacity:0.75;">(' + fmtBytes(a.cv_size) + ')</span></a></td></tr>';
+        }).join('');
+      }
+      function renderContact(list) {
+        document.getElementById('rows-contact').innerHTML = list.map(function (c) {
+          var pref = [fmtDay(c.preferred_date), c.preferred_time].filter(Boolean).join(' ');
+          return '<tr>' + td(fmtDate(c.created_at)) + td(c.name) + td(c.company) + mailTd(c.email) +
+            td(c.phone) + td(c.service) + td(pref) + msgTd(c.project_description) + msgTd(c.message) + '</tr>';
+        }).join('');
+      }
+      function renderQuotes(list) {
+        document.getElementById('rows-quotes').innerHTML = list.map(function (q) {
+          return '<tr>' + td(fmtDate(q.created_at)) + td(q.name) + td(q.company) + mailTd(q.email) +
+            td(q.phone) + td(q.service) + msgTd(q.project_description) + msgTd(q.message) + '</tr>';
+        }).join('');
+      }
 
-          var rows = apps.map(function (a) {
-            var linkedin = a.linkedin_url
-              ? '<a href="' + esc(a.linkedin_url) + '" target="_blank" rel="noopener noreferrer">View</a>'
-              : '&mdash;';
-            return '<tr>' +
-              '<td>' + fmtDate(a.created_at) + '</td>' +
-              '<td>' + esc(a.full_name) + '</td>' +
-              '<td><a href="mailto:' + esc(a.email) + '">' + esc(a.email) + '</a></td>' +
-              '<td>' + esc(a.phone) + '</td>' +
-              '<td>' + esc(a.role_interest) + '</td>' +
-              '<td>' + esc(a.experience || '—') + '</td>' +
-              '<td>' + linkedin + '</td>' +
-              '<td class="admin-message-cell" title="' + esc(a.message || '') + '">' + esc(a.message || '—') + '</td>' +
-              '<td><a href="/api/admin/download?id=' + encodeURIComponent(a.id) + '" class="btn btn-primary btn-sm">' +
-                'Download <span style="opacity:0.75;">(' + fmtBytes(a.cv_size) + ')</span></a></td>' +
-              '</tr>';
-          }).join('');
-
-          document.getElementById('rows').innerHTML = rows;
-          state.style.display = 'none';
-          document.getElementById('table-wrap').style.display = 'block';
-        })
-        .catch(function (err) {
-          if (err && err.message === 'unauth') return;
-          state.textContent = 'Could not load applications. Please refresh.';
+      function setCount(key, list) {
+        var el = document.querySelector('[data-count="' + key + '"]');
+        if (el) el.textContent = '(' + list.length + ')';
+      }
+      function showPanel(key) {
+        ['apps', 'contact', 'quotes'].forEach(function (k) {
+          document.getElementById('panel-' + k).hidden = (k !== key);
         });
+        document.querySelectorAll('.admin-tab').forEach(function (t) {
+          t.setAttribute('aria-selected', t.dataset.panel === key ? 'true' : 'false');
+        });
+      }
+      document.querySelectorAll('.admin-tab').forEach(function (t) {
+        t.addEventListener('click', function () { showPanel(t.dataset.panel); });
+      });
+
+      Promise.all([
+        fetch('/api/admin/applications', { headers: { Accept: 'application/json' } }),
+        fetch('/api/admin/enquiries', { headers: { Accept: 'application/json' } })
+      ]).then(function (resps) {
+        if (resps.some(function (r) { return r.status === 401; })) {
+          window.location.href = '/admin/login';
+          throw new Error('unauth');
+        }
+        if (resps.some(function (r) { return !r.ok; })) throw new Error('load failed');
+        return Promise.all(resps.map(function (r) { return r.json(); }));
+      }).then(function (data) {
+        var apps = data[0].applications || [];
+        var contact = data[1].contact || [];
+        var quotes = data[1].quotes || [];
+
+        renderApps(apps); renderContact(contact); renderQuotes(quotes);
+        setCount('apps', apps); setCount('contact', contact); setCount('quotes', quotes);
+
+        state.style.display = 'none';
+        showPanel('apps');
+      }).catch(function (err) {
+        if (err && err.message === 'unauth') return;
+        state.textContent = 'Could not load submissions. Please refresh.';
+      });
     }());
   </script>
 </body>
